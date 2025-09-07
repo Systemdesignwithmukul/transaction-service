@@ -1,0 +1,36 @@
+{
+  "type": "record",
+  "name": "TransactionEvent",
+  "namespace": "com.riskplatform.transaction.avro",
+  "doc": "Schema for transaction events in the risk platform",
+  "fields": [
+    {
+      "name": "accountId",
+      "type": "string",
+      "doc": "Unique identifier for the account"
+    },
+    {
+      "name": "amount",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Transaction amount (optional)"
+    },
+    {
+      "name": "transactionType",
+      "type": {
+        "type": "enum",
+        "name": "TransactionType",
+        "symbols": ["DEBIT", "CREDIT", "TRANSFER", "WITHDRAWAL", "DEPOSIT"]
+      },
+      "doc": "Type of transaction"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Transaction timestamp in milliseconds since epoch"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: Transaction Service API
+  description: API for managing financial transactions
+  version: 1.0.0
+  contact:
+    name: Risk Platform Team
+    email: support@riskplatform.com
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.riskplatform.com
+    description: Production server
+
+paths:
+  /transactions/{accountId}:
+    post:
+      summary: Create a new transaction
+      description: Creates a new transaction for the specified account
+      operationId: createTransaction
+      tags:
+        - transactions
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: The unique identifier of the account
+          schema:
+            type: string
+            example: "ACC123456789"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+            examples:
+              deposit:
+                summary: Deposit transaction
+                value:
+                  amount: 1000.50
+                  transactionType: "DEPOSIT"
+              withdrawal:
+                summary: Withdrawal transaction
+                value:
+                  amount: 250.00
+                  transactionType: "WITHDRAWAL"
+      responses:
+        '200':
+          description: Transaction created successfully
+        '400':
+          description: Bad request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    TransactionRequest:
+      type: object
+      required:
+        - amount
+        - transactionType
+      properties:
+        amount:
+          type: number
+          format: double
+          description: The transaction amount
+          minimum: 0.01
+          example: 1000.50
+        transactionType:
+          $ref: '#/components/schemas/TransactionType'
+      additionalProperties: false
+
+    TransactionType:
+      type: string
+      description: Type of transaction
+      enum:
+        - DEBIT
+        - CREDIT
+        - TRANSFER
+        - WITHDRAWAL
+        - DEPOSIT
+      example: "DEPOSIT"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "INVALID_TRANSACTION_TYPE"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid transaction type provided"
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: "2024-03-15T10:30:00Z"

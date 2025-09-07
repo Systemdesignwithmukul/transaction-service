@@ -1,0 +1,62 @@
+# Please put ALL APPLICATION Properties here
+# They might be empty or configured from AWS, however, all propertiest must be listed here
+server:
+  servlet:
+    context-path: /${spring.application.name}
+
+spring:
+  application:
+    name: transaction-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/transaction_service
+    username: root
+    password: Mukul@2002
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 20000
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 10000
+      max-lifetime: 1000
+      auto-commit: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      acks: all
+      retries: 3
+      properties:
+        schema.registry.url: http://localhost:8081
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+    transaction-events:
+      topic: transaction-events
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    database-platform: org.hibernate.dialect.MySQLDialect
+  liquibase:
+    change-log: classpath:db/changelog-master.xml
+    enabled: true
+
+platform:
+  db:
+    name: transaction_service
+
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include:
+          - health
+          - info
+    web:
+      exposure:
+        include:
+          - health
+          - info
